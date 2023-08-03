@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/go-git/go-billy/v5/memfs"
@@ -17,7 +18,8 @@ func gitClone(repo string) (*git.Repository, error) {
 	fs := memfs.New()
 
 	rep, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
-		URL: repo,
+		URL:      repo,
+		Progress: os.Stdout,
 	})
 
 	if err != nil {
@@ -68,6 +70,7 @@ func GetCommit(repoLink string, fileHash string, file string) error {
 		if w, err = r.Worktree(); err != nil {
 			return err
 		}
+
 		// Checkout to the current commit (c.Hash)
 		if err = w.Checkout(&git.CheckoutOptions{Hash: c.Hash}); err != nil {
 			return err
